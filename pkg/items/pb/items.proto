@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package items;
+
+option go_package = "./pkg/items/pb";
+
+service ItemService {
+    rpc CreateNewCategory (NewCategory) returns (Category) {}
+    rpc GetCategories (GetCategoriesParams) returns (CategoriesList) {}
+    rpc CreateNewItem (NewItem) returns (Item) {}
+    rpc GetItemsByCategory (GetItemsByCategoryParams) returns (ItemsList) {}
+}
+
+message NewCategory {
+    string name = 1;
+}
+  
+message Category {
+    int64 id = 1;
+    string name = 2;
+}
+  
+message GetCategoriesParams {
+  
+}
+  
+message CategoriesList {
+    repeated Category categories = 1; 
+}
+
+message NewItem {
+    string name = 1;
+    int64 category_id = 2;
+}
+  
+message Item {
+    int64 id = 1;
+    string name = 2;
+    int64 category_id = 3;
+}
+  
+message GetItemsByCategoryParams {
+    int64 category_id = 1;
+}
+  
+message ItemsList {
+    repeated Item items = 1; 
+}
+  
