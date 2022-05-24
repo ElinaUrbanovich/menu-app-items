@@ -52,3 +52,31 @@ func (server *ItemServiceServer) CreateNewCategory(ctx context.Context, in *pb.N
 	tx.Commit(context.Background())
 	return createdCategory, nil
 }
+
+func (server *ItemServiceServer) GetCategories(ctx context.Context, in *pb.GetCategoriesParams) (*pb.CategoriesList, error) {
+	tx, err := server.Conn.Begin(context.Background())
+	if err != nil {
+		log.Fatalf("conn.Begin failed: %v", err)
+	}
+
+	categories := []*pb.Category{}
+
+	rows, err := tx.Query(context.Background(), "select * from categories")
+	if err != nil {
+		log.Fatalf("tx.Exec failed: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c pb.Category
+		err := rows.Scan(&c.Id, &c.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		categories = append(categories, &c)
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return &pb.CategoriesList{Categories: categories}, nil
+}
